@@ -25,7 +25,7 @@ public enum Operacion {
 	private String signo;
 	
 	@JsonCreator
-    public static Operacion desdeValor(String valor) {
+    public static Operacion parsear(String valor) {
 
         for (int i = 0; i < valores.length; ++i) {
             Operacion opActual = valores[i];
