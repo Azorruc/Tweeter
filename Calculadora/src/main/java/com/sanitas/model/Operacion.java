@@ -16,6 +16,9 @@ public enum Operacion {
 	//TODO añadir más operaciones
 	
 	//La operación podrá ser representada o bién por el literal o bién por el signo matemático
+	//El signo + es un carácter especial, no admitido en la url
+	//Si se llamara desde un frontal habría que utilizar url encoding que transformaría en más en
+	//su valor en UTF-8 %2B
 	public String getSigno() {
 		return signo;
 	}
