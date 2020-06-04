@@ -6,23 +6,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.net.URI;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.RestTemplate;
 
 import com.sanitas.dto.ResultDto;
 import com.sanitas.enumeration.Operacion;
 import com.sanitas.service.CalculadoraService;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CalculadoraControllerTest {
 
 	private MockMvc mvc;
+	
+	@LocalServerPort
+    int randomServerPort;
 	
 	@Mock
 	CalculadoraService calculadoraService;
@@ -86,23 +96,19 @@ class CalculadoraControllerTest {
 		/**
 		 * Given
 		 */
-		ResultDto resultOperation = new ResultDto();
-		resultOperation.setSuccess(true);
-		resultOperation.setResult("3.8");
-		when(calculadoraService.calcular(new BigDecimal(FIRST_PARAM_VALID_VALUE),
-				new BigDecimal(SECOND_PARAM_VALID_VALUE), Operacion.SUMA.getSigno())).thenReturn(resultOperation);
-		
-		/**
-		 * When
-		 */
-		ResultActions result = mvc.perform(
-				get(SUMA_URI.concat("?").concat(FIRST_PARAM_NAME).concat("=").concat(FIRST_PARAM_VALID_VALUE)
-						.concat("&").concat(SECOND_PARAM_NAME).concat("=").concat(SECOND_PARAM_VALID_VALUE)));
-		
-		/**
-		 * Then
-		 */
-		result.andExpect(status().isOk()).andExpect(content().json("{\"result\": \"3.8\", \"success\": true}"));
+
+		RestTemplate restTemplate = new RestTemplate();
+		 String baseUrl = "http://localhost:" + randomServerPort + SUMA_URI.concat("?").concat(FIRST_PARAM_NAME).concat("=").concat(FIRST_PARAM_VALID_VALUE)
+				.concat("&").concat(SECOND_PARAM_NAME).concat("=").concat(SECOND_PARAM_VALID_VALUE);
+		 URI uri = new URI(baseUrl);
+		 
+		 ResponseEntity<ResultDto> resultado = restTemplate.getForEntity(uri, ResultDto.class);
+		 
+		//Comprueba el resultado
+	    Assert.assertEquals(200, resultado.getStatusCodeValue());
+	    ResultDto result = (ResultDto) resultado.getBody();
+	    Assert.assertEquals(result.isSuccess(), true);
+	    Assert.assertEquals(result.getResult(), "3.8");
 	}
 	
 	@Test
@@ -113,20 +119,18 @@ class CalculadoraControllerTest {
 		ResultDto resultOperation = new ResultDto();
 		resultOperation.setSuccess(true);
 		resultOperation.setResult("0.8");
-		when(calculadoraService.calcular(new BigDecimal(FIRST_PARAM_VALID_VALUE),
-				new BigDecimal(SECOND_PARAM_VALID_VALUE), Operacion.RESTA.getSigno())).thenReturn(resultOperation);
-
-		/**
-		 * When
-		 */
-		ResultActions result = mvc.perform(
-				get(RESTA_URI.concat("?").concat(FIRST_PARAM_NAME).concat("=").concat(FIRST_PARAM_VALID_VALUE)
-						.concat("&").concat(SECOND_PARAM_NAME).concat("=").concat(SECOND_PARAM_VALID_VALUE)));
-
-		/**
-		 * Then
-		 */
-		result.andExpect(status().isOk()).andExpect(content().json("{\"result\": \"0.8\", \"success\": true}"));
+		RestTemplate restTemplate = new RestTemplate();
+		 String baseUrl = "http://localhost:" + randomServerPort + RESTA_URI.concat("?").concat(FIRST_PARAM_NAME).concat("=").concat(FIRST_PARAM_VALID_VALUE)
+				.concat("&").concat(SECOND_PARAM_NAME).concat("=").concat(SECOND_PARAM_VALID_VALUE);
+		 URI uri = new URI(baseUrl);
+		 
+		 ResponseEntity<ResultDto> resultado = restTemplate.getForEntity(uri, ResultDto.class);
+		 
+		//Comprueba el resultado
+	    Assert.assertEquals(200, resultado.getStatusCodeValue());
+	    ResultDto result = (ResultDto) resultado.getBody();
+	    Assert.assertEquals(result.isSuccess(), true);
+	    Assert.assertEquals(result.getResult(), "0.8");
 	}
 
 }
