@@ -1,4 +1,4 @@
-package com.sanitas.model;
+package com.sanitas.enumeration;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -13,12 +13,9 @@ public enum Operacion {
 	SUMA("+"),
     RESTA("-");
 	
-	//TODO añadir más operaciones
+	//OPTIONAL se podrían añadir más operaciones como multiplicación y división
 	
 	//La operación podrá ser representada o bién por el literal o bién por el signo matemático
-	//El signo + es un carácter especial, no admitido en la url
-	//Si se llamara desde un frontal habría que utilizar url encoding que transformaría en más en
-	//su valor en UTF-8 %2B
 	public String getSigno() {
 		return signo;
 	}
@@ -37,7 +34,8 @@ public enum Operacion {
                 return opActual;
             }
         }
-
-        throw new RuntimeException("Operación no soportada para el valor: " + valor);
+        
+        //Si no encontramos el valor entre las operaciones definidas, devolvemos null
+        return null;
     }
 }
